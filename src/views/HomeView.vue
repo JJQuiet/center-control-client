@@ -37,7 +37,7 @@
           @end="onDragEnd"
           v-model="inPutArr"
           item-key="inputtype"
-        >
+          >
           <!--  -->
           <template #item="{ element }">
             <div class="flex flex-col w-fit" @dblclick="tapLeftBtn(element)">
@@ -54,8 +54,12 @@
                 <div
                   class="absolute inset-0 flex items-center justify-center text-white"
                 >
-                  <!-- <h4 :class="element">{{ element.aliasname }}</h4> -->
-                  <input type="text" v-model=element.aliasname />
+                  <input
+                    :key="element.id"
+                    @touchend="focusInput"
+                    type="text"
+                    v-model="element.aliasname"
+                  />
                 </div>
               </div>
               <div class="h-6"></div>
@@ -214,7 +218,7 @@ import titlebtn from "@/components/titlebtn.vue"; // @ is an alias to /src
 import dragkuang from "@/components/dragkuang.vue"; // @ is an alias to /src
 import inforender from "@/components/inforender.vue"; // @ is an alias to /src
 import centerinfo from "@/components/centerinfo.vue"; // @ is an alias to /src
-import { fa } from "element-plus/es/locale";
+import { fa, id } from "element-plus/es/locale";
 import ReqUtils from "@/unit/http/ReqUtils";
 import VideoOutVo from "@/unit/model/vo/VideoOutVo";
 import VideoInpVo from "@/unit/model/vo/VideoInpVo";
@@ -283,11 +287,8 @@ const tapEditOutput = () => {
 const onDelSelfKuang = (e1: any) => {
   while (e1.value.length > 0) {
     let data: any = e1.value.splice(0, 1);
-    // inPutArr.value.push({...data[0]});
   }
-  // inPutArr.value.sort((a:any,b:any)=>{
-  //    return a.inputtype-b.inputtype;
-  // });
+
 };
 const onDragKuangEnd = (e1: any, index: number) => {
   let i = 0;
@@ -295,11 +296,9 @@ const onDragKuangEnd = (e1: any, index: number) => {
     if (index != -1) {
       if (index != i) {
         let data: any = e1.value.splice(i, 1);
-        // inPutArr.value.push({...data[0]});
       }
     } else {
       let data: any = e1.value.splice(0, 1);
-      // inPutArr.value.push({...data[0]});
     }
     i++;
   }
@@ -353,6 +352,9 @@ const tapSaveBtn = async () => {
   VideoModel.updateOutVideoVo2Four(new VideoOutVo(res), outPutArr);
   ElMessage.success("保存成功");
 };
+const focusInput = (el:any) => {
+  el.target.focus();
+}
 watch(inPutArr, (newVal) => {
   newVal.forEach((item,index) => {
     const oldVal = snapshot_input.value[index];
@@ -385,6 +387,7 @@ onMounted(async () => {
     j++;
   }
   snapshot_input.value = inPutArr.value.map((item) => ({ ...item }));
+  console.log('%c [ inPutArr.value ]-391', 'font-size:13px; background:pink; color:#bf2c9f;', inPutArr.value)
   VideoModel.videoInpArr = videoInArr;
   let videoOutArr = [];
   let i = 0;
@@ -415,10 +418,10 @@ onMounted(async () => {
 <style scoped>
 input {
   /* // 去除未选中状态边框 */
-  border: 0; 
-/* // 去除选中状态边框 */
-  outline: none; 
-/* // 透明背景 */
+  border: 0;
+  /* // 去除选中状态边框 */
+  outline: none;
+  /* // 透明背景 */
   background-color: rgba(0, 0, 0, 0);
   color: #f4eeee;
   font-size: large;
